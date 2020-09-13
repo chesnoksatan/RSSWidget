@@ -6,6 +6,8 @@
 #include <QCoreApplication>
 #include <QThread>
 
+#include <RequestHelper/RequestHelper.h>
+
 class HTTPRequestWorker : public QObject
 {
     Q_OBJECT
@@ -50,7 +52,11 @@ private:
 
     QMutex m_mutex; ///< Мьютекс для добавления запросов в вектор запросов
 
-    QVector<QString> m_requests;
+    ///
+    /// Для QVector Вся эта ебала не работает
+    /// \brief m_requests
+    ///
+    std::vector<std::unique_ptr<RequestHelper>> m_requests;
 };
 
 #endif // CALCULATORCONTROLLER_H

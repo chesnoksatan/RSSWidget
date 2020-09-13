@@ -5,7 +5,9 @@ Core::Core(QObject *parent) : QObject(parent)
     m_mainWindow = new FormController();
 
     m_requestWorker = new HTTPRequestWorker();
-    m_thread = new QThread;
+    m_thread = new QThread();
+
+    startThread();
 
     QObject::connect(m_mainWindow, &FormController::signalAddRequest,
                      this, &Core::addRequest);
