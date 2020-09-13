@@ -26,7 +26,17 @@ void FormController::readSettings()
             _mainWindow->setProperty("y", _settings.value("/y",0).toInt());
         _settings.endGroup();
 
-    _settings.endGroup();
+        _settings.endGroup();
+}
+
+void FormController::addRequest(const QString &reqName)
+{
+    emit signalAddRequest(reqName);
+}
+
+void FormController::removeRequest(const QString &reqName)
+{
+    emit signalRemoveRequest(reqName);
 }
 
 void FormController::writeSettings()

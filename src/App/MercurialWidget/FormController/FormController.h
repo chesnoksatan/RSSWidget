@@ -19,17 +19,26 @@ private:
 
     QSettings _settings;
 
-    /*!
-     * \brief Считывает сохраненые настройки и устанавливает из в форму
-     */
-    void readSettings();
-
 public slots:
     /*!
      * \brief Вызов происходит в момент закрытия окна программы,
      *        чтобы сохранить последние настройки
      */
     void writeSettings();
+
+signals:
+    void signalAddRequest(const QString &reqName);
+    void signalRemoveRequest(const QString &reqName);
+
+private:
+
+    /*!
+     * \brief Считывает сохраненые настройки и устанавливает из в форму
+     */
+    void readSettings();
+
+    void addRequest(const QString &reqName);
+    void removeRequest(const QString &reqName);
 };
 
 #endif // FORMCONTROLLER_H
