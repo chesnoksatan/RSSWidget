@@ -1,4 +1,4 @@
-QT += qml quick quickcontrols2 widgets
+QT += qml quick quickcontrols2 widgets xml network
 
 include( ../../../common.pri )
 include( ../../../app.pri )

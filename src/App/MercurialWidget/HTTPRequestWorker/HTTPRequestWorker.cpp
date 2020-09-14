@@ -38,7 +38,7 @@ void HTTPRequestWorker::request()
         m_mutex.lock();
 
         for ( const auto &helper : m_requests )
-            helper->request();
+            helper->getRequest();
 
         m_mutex.unlock();
 

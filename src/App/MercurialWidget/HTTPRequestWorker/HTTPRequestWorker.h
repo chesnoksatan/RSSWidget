@@ -46,7 +46,7 @@ public slots:
     void request();
 
 private:
-    int m_delay = 1; ///< Количество секунд задержки запросов
+    const int m_delay = 1; ///< Количество секунд задержки запросов
 
     std::atomic<bool> m_abort; ///< Флаг прекращения потока
 
