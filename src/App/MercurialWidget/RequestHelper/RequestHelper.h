@@ -1,8 +1,8 @@
-#ifndef REQUESTHELPER_H
-#define REQUESTHELPER_H
+#pragma once
 
 #include <QObject>
 #include <QString>
+#include <QDebug>
 
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkRequest>
@@ -12,11 +12,12 @@ class RequestHelper final : public QObject
 {
     Q_OBJECT
 public:
-    RequestHelper(const QString &address, QObject *parent = nullptr);
-    ~RequestHelper();
+    RequestHelper(const QString &address, QObject *parent = nullptr)
+      : QObject(parent),
+        m_address(address),
+        m_request(QUrl(m_address)) {}
 
-    // base class should be explicitly initialized in the copy constructor
-    RequestHelper(const RequestHelper& other) : QObject(), m_address(other.m_address) { }
+    ~RequestHelper() {}
 
 public:
     void getRequest();
@@ -29,8 +30,4 @@ public slots:
 private:
     const QString m_address;
     QNetworkRequest m_request;
-    QNetworkAccessManager *m_manager;
-
 };
-
-#endif // REQUESTHELPER_H

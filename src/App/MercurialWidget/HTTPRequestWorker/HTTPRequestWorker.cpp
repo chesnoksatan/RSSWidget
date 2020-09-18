@@ -1,18 +1,20 @@
 #include "HTTPRequestWorker.h"
 
+#include <QDebug>
+
 namespace { constexpr auto MAIN_ADDRESS = "http://hg.asoft/hg/"; }
 
-HTTPRequestWorker::HTTPRequestWorker(QObject *parent)
-    : QObject(parent)
-
+void HTTPRequestWorker::abort()
 {
-
+    QMutexLocker locker(&m_mutex);
+    m_abort = true;
 }
 
 void HTTPRequestWorker::addAddress(const QString &address)
 {
     QMutexLocker locker(&m_mutex);
-    m_requests.push_back(std::make_unique<RequestHelper>(RequestHelper(MAIN_ADDRESS + address)));
+    auto helper = std::make_unique<RequestHelper>(MAIN_ADDRESS + address);
+    m_requests.push_back(std::move(helper));
 }
 
 void HTTPRequestWorker::removeAddress(const QString &address)
@@ -42,7 +44,7 @@ void HTTPRequestWorker::request()
 
         m_mutex.unlock();
 
-        QThread::sleep(m_delay);
+        QThread::msleep(m_delay);
     }
 
     emit finished();

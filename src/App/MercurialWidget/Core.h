@@ -1,5 +1,4 @@
-#ifndef CORE_H
-#define CORE_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -28,5 +27,3 @@ private slots:
 private:
     void startThread();
 };
-
-#endif // CORE_H
