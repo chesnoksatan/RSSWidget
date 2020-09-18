@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QXmlReader>
+#include <QXmlStreamReader>
 #include <QMap>
 
 class XmlParser
@@ -10,4 +10,20 @@ public:
     XmlParser() {}
 
     static OutgoingType parse(const QString &incomingData);
+
+private:
+
+    static const struct
+    {
+        QString rss = "rss";
+        QString channel = "channel";
+        QString title = "title";
+        QString link = "link";
+        QString description = "description";
+        QString language = "language";
+        QString lastBuildDate = "lastBuildDate";
+        QString item = "item";
+        QString creator ="dc:creator";
+        QString pubDate = "pubDate";
+    } Tags;
 };

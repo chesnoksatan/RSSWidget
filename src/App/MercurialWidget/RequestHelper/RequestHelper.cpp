@@ -1,5 +1,7 @@
 #include "RequestHelper.h"
 
+#include "XmlParser/XmlParser.h"
+
 void RequestHelper::getRequest()
 {
     const auto &manager = new QNetworkAccessManager();
@@ -9,12 +11,14 @@ void RequestHelper::getRequest()
                      this, &RequestHelper::managerFinished);
 }
 
-void RequestHelper::managerFinished(QNetworkReply *reply)
+void RequestHelper::managerFinished(QNetworkReply *networkReply)
 {
-    if (reply->error()) {
-        qDebug() << reply->errorString();
+    if (networkReply->error()) {
+        qDebug() << networkReply->errorString();
         return;
     }
 
-    QString answer = reply->readAll();
+    QString answer = networkReply->readAll();
+
+    const auto &reply = XmlParser::parse(answer);
 }

@@ -25,7 +25,7 @@ public:
     const QString &getAddress() const { return m_address; }
 
 public slots:
-    void managerFinished(QNetworkReply *reply);
+    void managerFinished(QNetworkReply *networkReply);
 
 private:
     const QString m_address;
