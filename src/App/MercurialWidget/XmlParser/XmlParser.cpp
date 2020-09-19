@@ -1,71 +1,61 @@
 #include "XmlParser.h"
+
+#include <QDomDocument>
+#include <QDebug>
+
 XmlParser::OutgoingType XmlParser::parse(const QString &incomingData)
 {
     OutgoingType outgoingMessage;
 
-    QXmlStreamReader reader(incomingData);
+    QXmlStreamReader xmlReader(incomingData);
 
-    // TODO: Посмотреть, можно ли переопределить  метод readElementText()
-    if ( reader.readNextStartElement() )
+    while ( !(xmlReader.atEnd() || xmlReader.hasError()) )
     {
-        if ( reader.name() == Tags.rss )
+        QXmlStreamReader::TokenType token = xmlReader.readNext();
+
+        if ( token == QXmlStreamReader::StartDocument )
+            continue;
+
+        if ( token == QXmlStreamReader::StartElement && xmlReader.name() == Tags.title )
         {
-            if ( reader.readNextStartElement() )
-            {
-                if ( reader.name() == Tags.channel )
-                {
-                    while( reader.readNextStartElement() )
-                    {
-                         if(reader.name() == Tags.title)
-                         {
-                             outgoingMessage.insert("Заголовок", reader.readElementText());
-                             reader.readNext();
-                         }
-                         if ( reader.name() == Tags.description )
-                         {
-                             outgoingMessage.insert("Описание", reader.readElementText());
-                             reader.readNext();
-                         }
-                         if ( reader.name() == Tags.lastBuildDate )
-                         {
-                             outgoingMessage.insert("Время последнего запроса", reader.readElementText());
-                             reader.readNext();
-                         }
-                         if ( reader.name() == Tags.item )
-                         {
-                             while ( reader.readNextStartElement() )
-                             {
-                                 if ( reader.name() == Tags.title )
-                                 {
-                                     outgoingMessage.insert("Название коммита", reader.readElementText());
-                                     reader.readNext();
-                                 }
-                                 if ( reader.name() == Tags.creator )
-                                 {
-                                     outgoingMessage.insert("Автор коммита", reader.readElementText());
-                                     reader.readNext();
-                                 }
-                                 if ( reader.name() == Tags.pubDate )
-                                 {
-                                     outgoingMessage.insert("Дата и время коммита", reader.readElementText());
-                                     reader.readNext();
-                                 }
-                                 if ( reader.name() == Tags.description )
-                                 {
-                                     outgoingMessage.insert("Изменения", reader.readElementText());
-                                     reader.readNext();
-                                 }
-                                 reader.skipCurrentElement();
-                             }
-                         }
-                         reader.skipCurrentElement();
-                    }
-                }
-            }
+            qDebug() << xmlReader.name() << xmlReader.readElementText();
+        }
+        if ( token == QXmlStreamReader::StartElement && xmlReader.name() == Tags.creator )
+        {
+            qDebug() << xmlReader.name() << xmlReader.readElementText();
+        }
+        if ( token == QXmlStreamReader::StartElement && xmlReader.name() == Tags.pubDate )
+        {
+            qDebug() << xmlReader.name() << xmlReader.readElementText();
+        }
+        if ( xmlReader.name() == Tags.description )
+        {
+            qDebug() << xmlReader.name() << xmlReader.readElementText();
         }
     }
 
+    // TODO: Придумать новую систему
     return outgoingMessage;
+}
+
+QString XmlParser::getCommitPubDate(const QString &pubDate)
+{
+
+}
+
+QString XmlParser::getCommitAuthor(const QString &author)
+{
+
+}
+
+QString XmlParser::getCommitTitle(const QString &description)
+{
+
+}
+
+std::map<Commit::FileState, QString> XmlParser::getUpdatedFiles(const QString &description)
+{
+
 }
 
 decltype (XmlParser::Tags) XmlParser::Tags;

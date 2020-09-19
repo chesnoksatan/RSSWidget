@@ -9,6 +9,8 @@ void RequestHelper::getRequest()
 
     QObject::connect(manager, &QNetworkAccessManager::finished,
                      this, &RequestHelper::managerFinished);
+
+    manager->deleteLater();
 }
 
 void RequestHelper::managerFinished(QNetworkReply *networkReply)
