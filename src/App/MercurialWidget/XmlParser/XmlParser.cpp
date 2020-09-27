@@ -1,61 +1,95 @@
 #include "XmlParser.h"
 
-#include <QDomDocument>
 #include <QDebug>
 
 XmlParser::OutgoingType XmlParser::parse(const QString &incomingData)
 {
     OutgoingType outgoingMessage;
 
-    QXmlStreamReader xmlReader(incomingData);
+    QDomDocument document;
+    document.setContent(incomingData);
 
-    while ( !(xmlReader.atEnd() || xmlReader.hasError()) )
+    QDomElement root = document.elementsByTagName(Tags.channel).at(0).toElement();
+    QDomNode rootNode = root.firstChild();
+
+    while ( !rootNode.isNull() )
     {
-        QXmlStreamReader::TokenType token = xmlReader.readNext();
+        QDomElement elem = rootNode.toElement();
+        rootNode = rootNode.nextSibling();
 
-        if ( token == QXmlStreamReader::StartDocument )
-            continue;
+        if ( elem.tagName() == Tags.item )
+        {
+            QDomNode itemNode = elem.firstChild();
+            Commit currentCommit;
 
-        if ( token == QXmlStreamReader::StartElement && xmlReader.name() == Tags.title )
-        {
-            qDebug() << xmlReader.name() << xmlReader.readElementText();
-        }
-        if ( token == QXmlStreamReader::StartElement && xmlReader.name() == Tags.creator )
-        {
-            qDebug() << xmlReader.name() << xmlReader.readElementText();
-        }
-        if ( token == QXmlStreamReader::StartElement && xmlReader.name() == Tags.pubDate )
-        {
-            qDebug() << xmlReader.name() << xmlReader.readElementText();
-        }
-        if ( xmlReader.name() == Tags.description )
-        {
-            qDebug() << xmlReader.name() << xmlReader.readElementText();
+            while ( !itemNode.isNull() )
+            {
+                QDomElement itemElement = itemNode.toElement();
+
+                if ( itemElement.tagName() == Tags.title )
+                    currentCommit.setTitle(itemElement.text());
+
+                if ( itemElement.tagName() == Tags.creator )
+                    currentCommit.setAuthor(itemElement.text());
+
+                if ( itemElement.tagName() == Tags.pubDate )
+                    currentCommit.setTime(getCommitPubDate(itemElement.text()));
+
+                if ( itemElement.tagName() == Tags.description )
+                    currentCommit.setUpdatedFiles(getUpdatedFiles(itemElement.text()));
+
+                itemNode = itemNode.nextSibling();
+            }
+//            qDebug().noquote() << currentCommit.toString() << "\n";
+            outgoingMessage.push_back(currentCommit);
         }
     }
 
-    // TODO: Придумать новую систему
     return outgoingMessage;
 }
 
 QString XmlParser::getCommitPubDate(const QString &pubDate)
 {
+    auto date = pubDate;
 
+    date.remove(" -0000");
+    date.remove(0, 5);
+
+    return date;
 }
 
-QString XmlParser::getCommitAuthor(const QString &author)
+XmlParser::UpdatedFiles XmlParser::getUpdatedFiles(QString description)
 {
+    UpdatedFiles outgoingMessage;
 
+    description.remove(0, description.indexOf("\n\n") + 2);
+    description.remove("</pre>");
+
+    auto files = description.split("\n");
+
+    for ( auto &line : files )
+    {
+        const auto index = line.indexOf("(");
+
+        line.remove(index, line.size() - index);
+        line = line.simplified();
+
+        if ( line.at(0) == "M" )
+            outgoingMessage.push_back({Commit::FileState::Modified, line.remove(0, 2)});
+        if ( line.at(0) == "A" )
+            outgoingMessage.push_back({Commit::FileState::Added, line.remove(0, 2)});
+        if ( line.at(0) == "R" )
+            outgoingMessage.push_back({Commit::FileState::Removed, line.remove(0, 2)});
+    }
+
+    return outgoingMessage;
 }
 
-QString XmlParser::getCommitTitle(const QString &description)
+QString Commit::toString() const
 {
-
-}
-
-std::map<Commit::FileState, QString> XmlParser::getUpdatedFiles(const QString &description)
-{
-
+    return "Автор коммита: " + m_commitAuthor +
+           "\nДата коммита: " + m_commitTime +
+           "\nЗаголовок коммита: " + m_commitTitle;
 }
 
 decltype (XmlParser::Tags) XmlParser::Tags;

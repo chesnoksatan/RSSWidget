@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QXmlStreamReader>
-#include <QMap>
+#include <QDomDocument>
 
 #include <map>
 
 class Commit
 {
 public:
-    Commit() {}
+    explicit Commit() {}
 
     enum FileState {
         Modified = 0,
@@ -16,31 +15,35 @@ public:
         Removed
     };
 
+private:
+    using UpdatedFiles =  std::vector<std::pair<FileState, QString>>;
+
+    QString m_commitTitle;
+    QString m_commitTime;
+    QString m_commitAuthor;
+    UpdatedFiles m_commitUpdatedFiles;
+
+public:
     void setTitle(const QString &title) { m_commitTitle = title; }
     void setTime(const QString &time) { m_commitTime = time; }
     void setAuthor(const QString &author) { m_commitAuthor = author; }
-    void appendFile(const FileState state, const QString &filePath) { m_commitUpdatedFiles.insert({state, filePath}); }
+    void setUpdatedFiles(const UpdatedFiles &updatedFiles) { m_commitUpdatedFiles = updatedFiles; }
 
     QString getTitle() const { return m_commitTitle; }
     QString getTime() const { return m_commitTime; }
     QString getAuthor() const { return m_commitAuthor; }
-    const std::map<FileState, QString> &getUpdatedFiles() const { return m_commitUpdatedFiles; }
+    const UpdatedFiles &getUpdatedFiles() const { return m_commitUpdatedFiles; }
 
-private:
-    QString m_commitTitle;
-    QString m_commitTime;
-    QString m_commitAuthor;
-    std::map<FileState, QString> m_commitUpdatedFiles;
+    QString toString() const;
 };
 
 class XmlParser
 {
-    // TODO: Придумать новую систему
-    using OutgoingType = QMap<QString, QString>;
+    using OutgoingType = std::vector<Commit>;
+    using UpdatedFiles = std::vector<std::pair<Commit::FileState, QString>>;
 public:
     XmlParser() {}
 
-    // TODO: Придумать новую систему
     static OutgoingType parse(const QString &incomingData);
 
 private:
@@ -61,7 +64,5 @@ private:
 
 private:
     static QString getCommitPubDate(const QString &pubDate);
-    static QString getCommitAuthor(const QString &author);
-    static QString getCommitTitle(const QString &title);
-    static std::map<Commit::FileState, QString> getUpdatedFiles(const QString &description);
+    static UpdatedFiles getUpdatedFiles(QString description);
 };
