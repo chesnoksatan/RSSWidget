@@ -11,7 +11,7 @@ class HTTPRequestWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit HTTPRequestWorker(QObject *parent = nullptr) : QObject(parent) {}
+    explicit HTTPRequestWorker(QObject *parent = nullptr);
 
     /*!
      * \brief Прекращение работы потока
@@ -36,6 +36,12 @@ signals:
      * \brief Сигнал прекращение завершения потока
      */
     void finished();
+
+    /*!
+     * \brief Сигнал о получении информации репозитория
+     */
+    void signalGetSummary(const XmlParser::OutgoingType &summary);
+    void signalGetRequestError(const QString &error);
 
 public slots:
     /*!

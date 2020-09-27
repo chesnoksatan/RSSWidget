@@ -7,6 +7,8 @@
 #include <QObject>
 #include <QSettings>
 
+#include <XmlParser/XmlParser.h>
+
 class FormController : public QObject
 {
     Q_OBJECT
@@ -25,6 +27,9 @@ public slots:
      *        чтобы сохранить последние настройки
      */
     void writeSettings();
+
+    void getRepositorySummary(const XmlParser::OutgoingType &summary);
+    void getRequestError(const QString &error);
 
 signals:
     void signalAddRequest(const QString &reqName);

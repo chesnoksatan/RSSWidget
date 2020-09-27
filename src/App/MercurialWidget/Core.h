@@ -26,4 +26,5 @@ private slots:
 
 private:
     void startThread();
+    void initConnections();
 };

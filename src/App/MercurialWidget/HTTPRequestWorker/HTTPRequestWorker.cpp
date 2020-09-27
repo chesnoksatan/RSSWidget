@@ -2,7 +2,17 @@
 
 #include <QDebug>
 
-namespace { constexpr auto MAIN_ADDRESS = "http://hg.asoft/hg/"; }
+namespace
+{
+    constexpr auto MAIN_ADDRESS = "http://hg.asoft/hg/";
+    constexpr auto RSS_ADDRESS = "/feed/rss";
+}
+
+HTTPRequestWorker::HTTPRequestWorker(QObject *parent)
+    : QObject(parent)
+{
+    qRegisterMetaType<XmlParser::OutgoingType>("XmlParser::OutgoingType");
+}
 
 void HTTPRequestWorker::abort()
 {
@@ -13,7 +23,14 @@ void HTTPRequestWorker::abort()
 void HTTPRequestWorker::addAddress(const QString &address)
 {
     QMutexLocker locker(&m_mutex);
-    auto helper = std::make_unique<RequestHelper>(MAIN_ADDRESS + address);
+
+    auto helper = std::make_unique<RequestHelper>(MAIN_ADDRESS + address + RSS_ADDRESS);
+
+    QObject::connect(helper.get(), &RequestHelper::signalGetSummary,
+                     this, &HTTPRequestWorker::signalGetSummary);
+    QObject::connect(helper.get(), &RequestHelper::signalGetRequestError,
+                     this, &HTTPRequestWorker::signalGetRequestError);
+
     m_requests.push_back(std::move(helper));
 }
 

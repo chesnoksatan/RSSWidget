@@ -1,5 +1,7 @@
 #include "FormController.h"
 
+#include <QDebug>
+
 FormController::FormController(QObject *parent) : QObject(parent)
 {
     _engine = new QQmlApplicationEngine;
@@ -54,4 +56,15 @@ void FormController::writeSettings()
         _settings.endGroup();
 
     _settings.endGroup();
+}
+
+void FormController::getRequestError(const QString &error)
+{
+    qDebug() << error;
+}
+
+void FormController::getRepositorySummary(const XmlParser::OutgoingType &summary)
+{
+    for ( const auto &commit : summary)
+        qDebug() << commit.toString();
 }

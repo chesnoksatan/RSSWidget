@@ -7,16 +7,16 @@
 class Commit
 {
 public:
-    explicit Commit() {}
-
     enum FileState {
         Modified = 0,
         Added,
         Removed
     };
 
-private:
     using UpdatedFiles =  std::vector<std::pair<FileState, QString>>;
+    explicit Commit() {}
+
+private:
 
     QString m_commitTitle;
     QString m_commitTime;
@@ -39,9 +39,10 @@ public:
 
 class XmlParser
 {
+public:
     using OutgoingType = std::vector<Commit>;
     using UpdatedFiles = std::vector<std::pair<Commit::FileState, QString>>;
-public:
+
     XmlParser() {}
 
     static OutgoingType parse(const QString &incomingData);

@@ -8,6 +8,8 @@
 #include <QtNetwork/QNetworkRequest>
 #include <QtNetwork/QNetworkReply>
 
+#include <XmlParser/XmlParser.h>
+
 class RequestHelper final : public QObject
 {
     Q_OBJECT
@@ -18,6 +20,10 @@ public:
         m_request(QUrl(m_address)) {}
 
     ~RequestHelper() {}
+
+signals:
+    void signalGetSummary(const XmlParser::OutgoingType &summary);
+    void signalGetRequestError(const QString &error);
 
 public:
     void getRequest();

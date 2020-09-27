@@ -6,13 +6,8 @@ Core::Core(QObject *parent)
       m_requestWorker(new HTTPRequestWorker()),
       m_thread(new QThread())
 {
+    initConnections();
     startThread();
-
-    QObject::connect(m_mainWindow, &FormController::signalAddRequest,
-                     this, &Core::addRequest);
-
-    QObject::connect(m_mainWindow, &FormController::signalRemoveRequest,
-                     this, &Core::removeRequest);
 }
 
 Core::~Core()
@@ -54,4 +49,19 @@ void Core::startThread()
                      m_thread, &QThread::quit);
 
     m_thread->start();
+}
+
+void Core::initConnections()
+{
+    QObject::connect(m_mainWindow, &FormController::signalAddRequest,
+                     this, &Core::addRequest);
+
+    QObject::connect(m_mainWindow, &FormController::signalRemoveRequest,
+                     this, &Core::removeRequest);
+
+    QObject::connect(m_requestWorker, &HTTPRequestWorker::signalGetSummary,
+                     m_mainWindow, &FormController::getRepositorySummary);
+
+    QObject::connect(m_requestWorker, &HTTPRequestWorker::signalGetRequestError,
+                     m_mainWindow, &FormController::getRequestError);
 }
