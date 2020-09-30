@@ -16,6 +16,3 @@ HEADERS += \
     HTTPRequestWorker/HTTPRequestWorker.h \
     RequestHelper/RequestHelper.h \
     XmlParser/XmlParser.h
-
-DISTFILES += \
-    ../../../export/qml/main.qml \

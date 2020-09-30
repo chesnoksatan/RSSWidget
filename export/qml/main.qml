@@ -15,8 +15,11 @@ ApplicationWindow {
     Connections {
         target: FormController
         onGetNewCommit: {
-            for ( var i in commit )
-                console.debug(i, commit[i])
+//            for ( var i in commit )
+//                console.debug(i, commit[i])
+
+            var comnponent = Qt.createComponent('Notification.qml');
+            var object = comnponent.createObject(root, { 'title': commit["title"]});
         }
 
         onGetError: console.debug(errorString)

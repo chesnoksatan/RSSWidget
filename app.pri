@@ -6,3 +6,7 @@ macx:
 else: unix: QMAKE_LFLAGS += -Wl,--rpath=\\\$\$ORIGIN/../../lib.$${OS_SUFFIX}/
 
 QMAKE_LFLAGS_RPATH=
+
+DISTFILES += \
+    $$PWD/export/qml/main.qml \
+    $$PWD/export/qml/Notification.qml \
