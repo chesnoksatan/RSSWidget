@@ -2,7 +2,8 @@
 
 #include <QDebug>
 
-FormController::FormController(QObject *parent) : QObject(parent)
+FormController::FormController(QObject *parent)
+    : QObject(parent)
 {
     _engine = new QQmlApplicationEngine;
 
@@ -60,11 +61,11 @@ void FormController::writeSettings()
 
 void FormController::getRequestError(const QString &error)
 {
-    qDebug() << error;
+    emit getError(error);
 }
 
 void FormController::getRepositorySummary(const XmlParser::OutgoingType &summary)
 {
     for ( const auto &commit : summary)
-        qDebug() << commit.toString();
+        emit getNewCommit(commit.toJson());
 }

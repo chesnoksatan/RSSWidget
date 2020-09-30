@@ -24,7 +24,17 @@ void HTTPRequestWorker::addAddress(const QString &address)
 {
     QMutexLocker locker(&m_mutex);
 
-    auto helper = std::make_unique<RequestHelper>(MAIN_ADDRESS + address + RSS_ADDRESS);
+    const auto &mainAddress = MAIN_ADDRESS + address + RSS_ADDRESS;
+
+    const auto it = std::find_if(m_requests.begin(), m_requests.end(), [&mainAddress](const auto &helper)
+    {
+        return helper->getAddress() == mainAddress;
+    });
+
+    if ( it != m_requests.end() && !m_requests.empty() )
+        return;
+
+    auto helper = std::make_unique<RequestHelper>(mainAddress);
 
     QObject::connect(helper.get(), &RequestHelper::signalGetSummary,
                      this, &HTTPRequestWorker::signalGetSummary);
@@ -38,7 +48,7 @@ void HTTPRequestWorker::removeAddress(const QString &address)
 {
     QMutexLocker locker(&m_mutex);
 
-    m_requests.erase(std::remove_if(m_requests.begin(), m_requests.end(), [&](const std::unique_ptr<RequestHelper> &helper)
+    m_requests.erase(std::remove_if(m_requests.begin(), m_requests.end(), [&](const auto &helper)
     {
         return helper->getAddress() == address;
     }), m_requests.end());

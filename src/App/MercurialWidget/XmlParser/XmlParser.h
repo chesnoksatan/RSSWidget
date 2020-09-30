@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QJsonObject>
 #include <QDomDocument>
 
 #include <map>
@@ -15,7 +16,6 @@ public:
 
     using UpdatedFiles =  std::vector<std::pair<FileState, QString>>;
     explicit Commit() {}
-
 private:
 
     QString m_commitTitle;
@@ -35,13 +35,20 @@ public:
     const UpdatedFiles &getUpdatedFiles() const { return m_commitUpdatedFiles; }
 
     QString toString() const;
+    QJsonObject toJson() const;
+
+    bool operator==(const Commit &other)
+    {
+        return ( this->m_commitAuthor == other.getAuthor() ) &&
+               ( this->m_commitTime == other.getTime() ) &&
+               ( this->m_commitTitle == other.getTitle() );
+    }
 };
 
 class XmlParser
 {
 public:
     using OutgoingType = std::vector<Commit>;
-    using UpdatedFiles = std::vector<std::pair<Commit::FileState, QString>>;
 
     XmlParser() {}
 
@@ -65,5 +72,5 @@ private:
 
 private:
     static QString getCommitPubDate(const QString &pubDate);
-    static UpdatedFiles getUpdatedFiles(QString description);
+    static Commit::UpdatedFiles getUpdatedFiles(QString description);
 };

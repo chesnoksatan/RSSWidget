@@ -41,7 +41,7 @@ XmlParser::OutgoingType XmlParser::parse(const QString &incomingData)
                 itemNode = itemNode.nextSibling();
             }
 //            qDebug().noquote() << currentCommit.toString() << "\n";
-            outgoingMessage.push_back(currentCommit);
+            outgoingMessage.push_back(std::move(currentCommit));
         }
     }
 
@@ -58,9 +58,9 @@ QString XmlParser::getCommitPubDate(const QString &pubDate)
     return date;
 }
 
-XmlParser::UpdatedFiles XmlParser::getUpdatedFiles(QString description)
+Commit::UpdatedFiles XmlParser::getUpdatedFiles(QString description)
 {
-    UpdatedFiles outgoingMessage;
+    Commit::UpdatedFiles outgoingMessage;
 
     description.remove(0, description.indexOf("\n\n") + 2);
     description.remove("</pre>");
@@ -89,7 +89,25 @@ QString Commit::toString() const
 {
     return "Автор коммита: " + m_commitAuthor +
            "\nДата коммита: " + m_commitTime +
-           "\nЗаголовок коммита: " + m_commitTitle;
+            "\nЗаголовок коммита: " + m_commitTitle;
+}
+
+QJsonObject Commit::toJson() const
+{
+    QJsonObject commit;
+
+    commit.insert("title", m_commitTitle);
+    commit.insert("author", m_commitAuthor);
+    commit.insert("time", m_commitTime);
+
+    QJsonObject files;
+
+    for ( const auto &[state, file] : m_commitUpdatedFiles)
+        files.insert(file, state);
+
+    commit.insert("files", files);
+
+    return commit;
 }
 
 decltype (XmlParser::Tags) XmlParser::Tags;

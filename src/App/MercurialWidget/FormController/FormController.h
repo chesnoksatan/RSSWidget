@@ -26,7 +26,10 @@ public slots:
      * \brief Вызов происходит в момент закрытия окна программы,
      *        чтобы сохранить последние настройки
      */
-    void writeSettings();
+    Q_INVOKABLE void writeSettings();
+
+    Q_INVOKABLE void addRequest(const QString &reqName);
+    Q_INVOKABLE void removeRequest(const QString &reqName);
 
     void getRepositorySummary(const XmlParser::OutgoingType &summary);
     void getRequestError(const QString &error);
@@ -34,6 +37,8 @@ public slots:
 signals:
     void signalAddRequest(const QString &reqName);
     void signalRemoveRequest(const QString &reqName);
+    void getNewCommit(const QJsonObject &commit);
+    void getError(const QString &errorString);
 
 private:
 
@@ -41,9 +46,6 @@ private:
      * \brief Считывает сохраненые настройки и устанавливает из в форму
      */
     void readSettings();
-
-    void addRequest(const QString &reqName);
-    void removeRequest(const QString &reqName);
 };
 
 #endif // FORMCONTROLLER_H
